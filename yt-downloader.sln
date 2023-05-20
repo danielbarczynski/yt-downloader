@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "yt-downloader", "yt-downloader.csproj", "{826F70D2-7C1A-48A6-93A3-4DA617FCFBA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{826F70D2-7C1A-48A6-93A3-4DA617FCFBA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{826F70D2-7C1A-48A6-93A3-4DA617FCFBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{826F70D2-7C1A-48A6-93A3-4DA617FCFBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{826F70D2-7C1A-48A6-93A3-4DA617FCFBA0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8142049A-66B5-47DA-AA30-AD2C7659EA68}
+	EndGlobalSection
+EndGlobal
