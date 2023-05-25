@@ -26,7 +26,7 @@ public class Program
             string pattern = "[^a-zA-Z0-9 ]";
             string title = Regex.Replace(videoId.Title, pattern, "");
 
-            string audioFile = $"{title}.{audioStream.Container.Name}";
+            string audioFile = $"{title}.mp3";
             string videoFile = $"{title}.{videoStream.Container.Name}";
 
             await youtube.Videos.Streams.DownloadAsync(audioStream, audioFile);
@@ -40,9 +40,7 @@ public class Program
                 downloadsPath = Path.Combine(downloadsPath, "Pobrane");
 
             string destinationPath = Path.Combine(downloadsPath ?? specialFolder, outputFile);
-
-            string directory = Environment.CurrentDirectory;
-            string ffmpegPath = directory.Substring(0, directory.Length - 17) + @"\ffmpeg.exe";
+            string ffmpegPath = "ffmpeg.exe";
             string arguments = $"-i \"{videoFile}\" -i \"{audioFile}\" -c:v copy -c:a copy \"{destinationPath}\"";
 
             using (var process = new Process())
@@ -56,19 +54,19 @@ public class Program
                 process.WaitForExit(1000);
             }
 
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Congratulations! Video downloaded to folder: {destinationPath}");
+            Console.ResetColor();
+
             try
             {
                 File.Delete(audioFile);
                 File.Delete(videoFile);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Console.WriteLine(e.Message);
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Congratulations! Video downloaded to folder: {destinationPath}");
-            Console.ResetColor();
         }
         else
             Console.WriteLine("No audio or video streams available for the video.");
