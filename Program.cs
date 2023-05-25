@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
 
@@ -22,13 +23,16 @@ public class Program
 
         if (audioStream != null && videoStream != null)
         {
-            string audioFile = $"{videoId.Title}.{audioStream.Container.Name}";
-            string videoFile = $"{videoId.Title}.{videoStream.Container.Name}";
+            string pattern = "[^a-zA-Z0-9 ]";
+            string title = Regex.Replace(videoId.Title, pattern, "");
+
+            string audioFile = $"{title}.{audioStream.Container.Name}";
+            string videoFile = $"{title}.{videoStream.Container.Name}";
 
             await youtube.Videos.Streams.DownloadAsync(audioStream, audioFile);
             await youtube.Videos.Streams.DownloadAsync(videoStream, videoFile);
 
-            string outputFile = $"{videoId}.mp4";
+            string outputFile = $"{title}.mp4";
             string specialFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var downloadsPath = Path.Combine(specialFolder, "Downloads");
 
@@ -37,7 +41,8 @@ public class Program
 
             string destinationPath = Path.Combine(downloadsPath ?? specialFolder, outputFile);
 
-            string ffmpegPath = Path.GetFullPath("ffmpeg.exe");
+            string directory = Environment.CurrentDirectory;
+            string ffmpegPath = directory.Substring(0, directory.Length - 17) + @"\ffmpeg.exe";
             string arguments = $"-i \"{videoFile}\" -i \"{audioFile}\" -c:v copy -c:a copy \"{destinationPath}\"";
 
             using (var process = new Process())
