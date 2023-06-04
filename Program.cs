@@ -3,15 +3,19 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using YoutubeExplode;
 using YoutubeExplode.Videos.Streams;
+using yt_downloader;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
         Console.WriteLine("Paste the video url: ");
-
         string videoUrl = Console.ReadLine();
-        Console.WriteLine("The video is currently being downloaded in the highest quality available. Please wait while the download completes.");
+        if (!videoUrl.Contains("youtu.be") && !videoUrl.Contains("youtube.com"))
+        {
+            Console.WriteLine("Video not found");
+            return;
+        }
 
         var youtube = new YoutubeClient();
         var videoId = await youtube.Videos.GetAsync(videoUrl);
@@ -19,7 +23,6 @@ public class Program
         var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoId.Id);
         var audioStream = streamManifest.GetAudioStreams().GetWithHighestBitrate();
         var videoStream = streamManifest.GetVideoStreams().GetWithHighestVideoQuality();
-
 
         if (audioStream != null && videoStream != null)
         {
@@ -29,8 +32,38 @@ public class Program
             string audioFile = $"{title}.mp3";
             string videoFile = $"{title}.{videoStream.Container.Name}";
 
-            await youtube.Videos.Streams.DownloadAsync(audioStream, audioFile);
-            await youtube.Videos.Streams.DownloadAsync(videoStream, videoFile);
+            ProgressBar audioProgress;
+            Console.Write($"\nDownloading audio stream\n");
+            using (audioProgress = new ProgressBar())
+            {
+                for (int i = 0; i <= 100; i++)
+                {
+                    audioProgress.Report((double)i / 100);
+                    Thread.Sleep(20);
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Done\n");
+            Console.ResetColor();
+
+            ProgressBar videoProgress;
+            Console.Write($"Downloading video stream\n");
+            using (videoProgress = new ProgressBar())
+            {
+                for (int i = 0; i <= 100; i++)
+                {
+                    videoProgress.Report((double)i / 100);
+                    Thread.Sleep(20);
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Done\n");
+            Console.ResetColor();
+
+            await youtube.Videos.Streams.DownloadAsync(audioStream, audioFile, audioProgress);
+            await youtube.Videos.Streams.DownloadAsync(videoStream, videoFile, videoProgress);
 
             string outputFile = $"{title}.mp4";
             string specialFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -43,6 +76,7 @@ public class Program
             string ffmpegPath = "ffmpeg.exe";
             string arguments = $"-i \"{videoFile}\" -i \"{audioFile}\" -c:v copy -c:a copy \"{destinationPath}\"";
 
+            Console.WriteLine("Merging outputs into mp4 file...");
             using (var process = new Process())
             {
                 process.StartInfo.FileName = ffmpegPath;
@@ -55,7 +89,7 @@ public class Program
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Congratulations! Video downloaded to folder: {destinationPath}");
+            Console.WriteLine($"\nCongratulations! Video has been downloaded and moved to folder: {destinationPath}");
             Console.ResetColor();
 
             try
